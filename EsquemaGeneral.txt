@@ -1,0 +1,37 @@
+El esquema general de la calculadora de expresiones algebraicas es este:
+
+0. Obtener expresion algebraica de entrada estandar.
+1. Quitar espacio en blanco.
+2. Convertir multiplicacion implicita a multiplicacion explicita.  Puede ser: 
+		- constante multiplicada por variable 2*x 
+		- o constante multiplicada por parentesis 3*(5-j)
+3. Buscar variables y ponerlas en una lista.
+4. Obtener los valores de cada variable de la entrada estandar.
+5. Substituir variables por sus valores.
+6. Generar forma posfija de la expresion mediante algoritmo de Dijkstra. Este: https://en.wikipedia.org/wiki/Shunting-yard_algorithm
+7. Evaluar una operacion de la expresion.
+8. Imprimir forma posfija convertida a infija.
+9. Si todavia quedan operaciones a evaluar, regrese a 7.
+10. Fin del programa.
+
+De ahi se pueden plantear diferentes modulos del programa a implementar:
+0.	GetExpression.asm, modulo para obtener expresion algebraica.  Implementa:
+		- Declarar string en blanco de 1024 caracteres.
+		- Obtener string de entrada estandar y poner en string en blanco.
+		- Leer el string y remover espacio en blanco (espacios, tabs, newlines, etc.)
+1.	Implicit2ExplicitMul.asm, modulo para convertir a multiplicacion explicita. Implementa:
+		- Leer el string y agregar asterisco en todos los lugares donde hay multiplicacion implicita.
+2.	GetVariables.asm, modulo para convertir variables en expresion a constantes.  Implementa:
+		- Declara una lista de 20 nombres de variables de 128 caracteres maximo cada uno.
+		- Declara una lista de 20 enteros de 64 bits correspondientes a cada una de las variables.
+		- 
+3.	
+4.	
+5.	
+6.	
+7.	
+8.	
+9.	
+10.	
+11.	
+
