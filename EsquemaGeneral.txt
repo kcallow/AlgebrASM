@@ -14,6 +14,9 @@ El esquema general de la calculadora de expresiones algebraicas es este:
 9. Si todavia quedan operaciones a evaluar, regrese a 7.
 10. Fin del programa.
 
+
+GetExpression.asm, Implicit2ExplicitMul.asm, GetVariables.asm, Postfix.asm, Eval.asm, Main.asm, 
+
 De ahi se pueden plantear diferentes modulos del programa a implementar:
 0.	GetExpression.asm, modulo para obtener expresion algebraica.  Implementa:
 		- Declarar string Input en blanco de 1024 caracteres para guardar expresion algebraica en infijo.
