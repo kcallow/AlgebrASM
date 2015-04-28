@@ -21,11 +21,11 @@ De ahi se pueden plantear diferentes modulos del programa a implementar:
 0.	GetExpression.asm, modulo para obtener expresion algebraica.  Implementa:
 		- Declarar string Input en blanco de 1024 caracteres para guardar expresion algebraica en infijo.
 		- Declarar string Temp en blanco de 1024 caracteres para guardar expresiones temporales.
-		- Limpiar datos de Temp.
+		- Limpiar datos de string dado por rdi.
 		- Obtener string de entrada estandar y poner en string en blanco.
-		- Leer el string y remover espacio en blanco (espacios, tabs, newlines, etc.)
+		- Leer el string Input y remover espacio en blanco (espacios, tabs, newlines, etc.), guardar resultado en Temp
 1.	Implicit2ExplicitMul.asm, modulo para convertir a multiplicacion explicita. Implementa:
-		- Leer el string y agregar asterisco en todos los lugares donde hay multiplicacion implicita.
+		- Leer Input y agregar asterisco en todos los lugares donde hay multiplicacion implicita.  Poner resultado en Temp.
 2.	GetVariables.asm, modulo para convertir variables en expresion a constantes.  Implementa:
 		- Declara una lista de 20 nombres de variables de 128 caracteres maximo cada uno.
 		- Declara un string de 26 caracteres para almacenar temporalmente el valor de cada variable.

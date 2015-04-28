@@ -3,26 +3,26 @@ Input	resb	1024
 Temp	resb	1024
 
 section .data
-global _start
-_start:
-	call	getInput
-	call	removeWhitespace
-
-        mov     rsi,Temp
-	call	print
-
-	call	copyTemp2Input
-
-        mov     rsi,Input
-	call	print
-
-	mov	rdi,Input
-	call	clearString
-
-	call	print
-
-	mov	rax,1
-	int	80h
+;global _start
+;_start:
+;	call	getInput
+;	call	removeWhitespace
+;
+;        mov     rsi,Temp
+;	call	print
+;
+;	call	copyTemp2Input
+;
+;        mov     rsi,Input
+;	call	print
+;
+;	mov	rdi,Input
+;	call	clearString
+;
+;	call	print
+;
+;	mov	rax,1
+;	int	80h
 ;end _start
 
 clearString:
