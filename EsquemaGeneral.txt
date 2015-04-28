@@ -8,7 +8,7 @@ El esquema general de la calculadora de expresiones algebraicas es este:
 		- variable multiplicada por constante x5 -> x*5
 		- parentesis multiplicado por constante o variable (5-j)3 -> (5-j)*3; (j-2)y -> (j-2)*y
 		- parentesis mutiplicado por parentesis	(x*y-1)(x**3+4) -> (x*y-1)*(x**3+4)
-3. Buscar variables y ponerlas en una lista.
+3. Buscar nombres de variables y ponerlas en una lista.
 4. Obtener los valores de cada variable de la entrada estandar.
 5. Substituir variables por sus valores.
 6. Generar forma posfija de la expresion mediante algoritmo de Dijkstra. Este: https://en.wikipedia.org/wiki/Shunting-yard_algorithm
