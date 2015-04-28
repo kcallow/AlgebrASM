@@ -18,14 +18,24 @@ addAsterisks:
 ;end addAsterisks
 
 validateImpMul:
-;If last char read is digit and current char is letter or left parent, set zf.
-	call	isAlphaNum	;If previous character is neither digit nor letter, skip to end
-	jnz	.end		;Else test if current is literal or left paren
+;If last char read is digit and current char is letter or left paren, set zf.
+	call	isAlphaNum	;If previous character is neither digit nor letter, skip next test
+	jnz	.notAlphaNum	;Else test if current is literal or left paren
 	mov	ah, [rsi]	;Get current char
 	call	isUpperCase
 	jz	.end
 	call	isLowerCase
 	jz	.end
+	cmp	ah, '('
+	je	.end
+
+;If last char read is right paren, and current char is letter or digit, set zf.
+.notAlphaNum:
+	cmp	ah, ')'		;If neither alphanumeric nor right paren, end
+	jne	.end
+	mov	ah, [rsi]	;Get current char
+	call 	isAlphaNum	;If right paren is followed by number or letter or left paren, set zf.
+	je	.end
 	cmp	ah, '('
 .end:	
 	ret
@@ -37,7 +47,7 @@ isAlphaNum:
 	je	.end
 	call	isUpperCase	;If uppercase letter, zf is set and returns
 	je	.end
-	call	isDigit		;If lowercase letter, zf is set and returns
+	call	isLowerCase	;If lowercase letter, zf is set and returns
 .end:
 	ret
 ;end isDigit

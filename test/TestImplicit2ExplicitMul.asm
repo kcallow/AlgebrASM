@@ -4,7 +4,7 @@ section .data
 global _start
 _start:
 	mov	rdi, Input	;Write to input buffer
-	mov	bl, 4		;EOT character is delimitor for input
+	mov	bl,','		;Comma is delimitor for input
 	call	getString
 
 	call	addAsterisks
