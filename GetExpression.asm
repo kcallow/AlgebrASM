@@ -1,28 +1,29 @@
 section .bss
 Input	resb	1024
 Temp	resb	1024
+CharIn	resb	1
 
 section .data
-;global _start
-;_start:
-;	call	getInput
-;	call	removeWhitespace
-;
-;        mov     rsi,Temp
-;	call	print
-;
-;	call	copyTemp2Input
-;
-;        mov     rsi,Input
-;	call	print
-;
-;	mov	rdi,Input
-;	call	clearString
-;
-;	call	print
-;
-;	mov	rax,1
-;	int	80h
+global _start
+_start:
+	mov	rdi, Input	;Write to input buffer
+	mov	bl, ','		;Comma is delimitor for input
+	call	getString
+	call	removeWhitespace
+
+	call	copyTemp2Input
+
+        mov     rsi,Input
+	call	print
+
+	mov	rdi,Input
+	call	clearString
+
+	call	print
+
+	mov	rax,60
+	mov	rdi,0
+	syscall
 ;end _start
 
 clearString:
@@ -32,14 +33,35 @@ clearString:
 	ret
 ;end clearString
 
-getInput:
+getString:
+;Puts to string given by rdi
+;Reads separator character from bl
+	mov	rcx,1024
+.loop:
+	call	getChar
+	cmp	bl,al		;If separator found, end.
+	je	.end
+	stosb			;Else write char
+	dec	rcx		;Unless more than 1024
+	jnz	.loop
+.end:
+	ret
+;end getString
+
+getChar:
+;Puts char from stdin to al
+	push	rdi
+	push	rcx
         mov     rax,0           ;sys_read
 	mov     rdi,0           ;Read from std input
-	mov     rsi,Input       ;Put in input space
-	mov     rdx,1024        ;read 1 character
+	mov	rsi,CharIn
+	mov     rdx,1		;read 1 character
 	syscall
+	pop	rcx
+	pop	rdi
+	mov	al,[CharIn]
 	ret
-;end getInput
+;end getChar
 
 removeWhitespace:
 	mov	rsi,Input 	;Read characters from Input
