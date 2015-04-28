@@ -10,8 +10,9 @@ _start:
         mov     rsi,Temp
 	call	print
 
-	mov	rax,1
-	int	80h
+	mov	rax,60
+	mov	rdi,0
+	syscall
 ;end _start
 
 addAsterisks:
