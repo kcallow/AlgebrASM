@@ -17,7 +17,11 @@ getString:
 ;Reads separator character from bl
 	mov	rcx,1024
 .loop:
+	push	rdi
+	push	rcx
 	call	getChar
+	pop	rcx
+	pop	rdi
 	cmp	bl,al		;If separator found, end.
 	je	.end
 	stosb			;Else write char
@@ -29,15 +33,11 @@ getString:
 
 getChar:
 ;Puts char from stdin to al
-	push	rdi
-	push	rcx
         mov     rax,0           ;sys_read
 	mov     rdi,0           ;Read from std input
 	mov	rsi,CharIn
 	mov     rdx,1		;read 1 character
 	syscall
-	pop	rcx
-	pop	rdi
 	mov	al,[CharIn]
 	ret
 ;end getChar
