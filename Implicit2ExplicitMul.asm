@@ -1,19 +1,6 @@
 %include "GetExpression.asm"
 
 section .data
-global _start
-_start:
-	call	getInput
-
-	call	addAsterisks
-
-        mov     rsi,Temp
-	call	print
-
-	mov	rax,60
-	mov	rdi,0
-	syscall
-;end _start
 
 addAsterisks:
 	mov	rsi,Input 	;Read characters from Input
@@ -32,18 +19,28 @@ addAsterisks:
 
 validateImpMul:
 ;If last char read is digit and current char is letter or left parent, set zf.
-	call	isDigit		;If previous character is digit, 
-	jnz	.end		;test if current is literal or left paren
+	call	isAlphaNum	;If previous character is neither digit nor letter, skip to end
+	jnz	.end		;Else test if current is literal or left paren
 	mov	ah, [rsi]	;Get current char
 	call	isUpperCase
 	jz	.end
 	call	isLowerCase
 	jz	.end
 	cmp	ah, '('
-	jz	.end
 .end:	
 	ret
 ;end validateImpMul
+
+isAlphaNum:
+;Sets zf if ah is letter or number
+	call	isDigit		;If digit, zf is set and returns
+	je	.end
+	call	isUpperCase	;If uppercase letter, zf is set and returns
+	je	.end
+	call	isDigit		;If lowercase letter, zf is set and returns
+.end:
+	ret
+;end isDigit
 
 isDigit:
 ;Sets zf if ah is digit
