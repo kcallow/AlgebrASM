@@ -1,46 +1,11 @@
+%include "String.asm"
+
 section .bss
 Input	resb	1024
 Temp	resb	1024
 CharIn	resb	1
 
 section .data
-
-clearString:
-	mov	al,0		;Write zeros to string in rdi
-	mov	rcx,1024	;Do for all 1024 chars in string
-	rep	stosb
-	ret
-;end clearString
-
-getString:
-;Puts to string given by rdi
-;Reads separator character from bl
-	mov	rcx,1024
-.loop:
-	push	rdi
-	push	rcx
-	call	getChar
-	pop	rcx
-	pop	rdi
-	cmp	bl,al		;If separator found, end.
-	je	.end
-	stosb			;Else write char
-	dec	rcx		;Unless more than 1024
-	jnz	.loop
-.end:
-	ret
-;end getString
-
-getChar:
-;Puts char from stdin to al
-        mov     rax,0           ;sys_read
-	mov     rdi,0           ;Read from std input
-	mov	rsi,CharIn
-	mov     rdx,1		;read 1 character
-	syscall
-	mov	al,[CharIn]
-	ret
-;end getChar
 
 removeWhitespace:
 	mov	rsi,Input 	;Read characters from Input
@@ -66,11 +31,3 @@ copyTemp2Input:
 	rep	movsb		;Repeat copy operation for all 1024 chars
 	ret
 ;end copyTemp2Input
-
-print:
-        mov     rax,1           ;call to system's 'write'
-        mov     rdi,1           ;write to the standard output
-        mov     rdx,1024        ;input is at most 1024 chars
-        syscall
-	ret
-;end print

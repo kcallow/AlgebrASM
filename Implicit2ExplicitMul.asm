@@ -22,9 +22,7 @@ validateImpMul:
 	call	isAlphaNum	;If previous character is neither digit nor letter, skip next test
 	jnz	.notAlphaNum	;Else test if current is literal or left paren
 	mov	ah, [rsi]	;Get current char
-	call	isUpperCase
-	jz	.end
-	call	isLowerCase
+	call	isLetter
 	jz	.end
 	cmp	ah, '('
 	je	.end
@@ -45,12 +43,19 @@ isAlphaNum:
 ;Sets zf if ah is letter or number
 	call	isDigit		;If digit, zf is set and returns
 	je	.end
+	call	isLetter	;If letter, zf is set and returns
+.end:
+	ret
+;end isDigit
+
+isLetter:
+;Sets zf if ah is letter
 	call	isUpperCase	;If uppercase letter, zf is set and returns
 	je	.end
 	call	isLowerCase	;If lowercase letter, zf is set and returns
 .end:
 	ret
-;end isDigit
+;end isLetter
 
 isDigit:
 ;Sets zf if ah is digit
