@@ -1,3 +1,5 @@
+https://courses.engr.illinois.edu/ece390/archive/spr2002/books/labmanual/index.html
+
 El esquema general de la calculadora de expresiones algebraicas es este:
 
 0. Obtener expresion algebraica de entrada estandar.
