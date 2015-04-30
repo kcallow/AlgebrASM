@@ -16,7 +16,18 @@ strLens:
 	xchg	rdi,rsi		
 	ret
 ;end strLens
-	
+
+strReplaceAll:
+;Replaces all instances of rsi string in rdi string with r8 string
+;Takes rdi string len in rcx
+;Takes rsi string len in rdx
+;Takes r8 string len in r9
+.loop:
+	call	strReplace
+	cmp	rbx,0		;If str was not found, end.  rbx is find counter
+	je	.end
+	jmp	.loop
+;end strReplaceAll
 
 strReplace:
 ;Replaces first instance of rsi string in rdi string with r8 string
@@ -24,7 +35,7 @@ strReplace:
 ;Takes rsi string len in rdx
 ;Takes r8 string len in r9
 	call	strFind
-	cmp	rcx,0		;If str was not found, end
+	cmp	rbx,0		;If str was not found, end.  rbx is find counter
 	je	.end
 	xchg	r8,rsi
 	xchg	r9,rcx
@@ -42,11 +53,12 @@ strFind:
 ;Takes rdi string len in rcx
 ;Takes rsi string len in rdx
 	sub	rcx,rdx		;Read a until position strLen(rdi) - strLen(rsi)
+	mov	rbx,rcx		;Use rbx as counter for loop
 .loop:
 	call	strCompare
 	je	end
 	inc	rdi
-	dec	rcx
+	dec	rbx
 	jnz	.loop		;If not found, try with next position
 .end:	
 	ret

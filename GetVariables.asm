@@ -3,17 +3,25 @@ VarName	resb	1024	; 1024 char variable name
 VarValu	resb	26	; 64 bit integers are max 26 chars long
 
 getVarNames:
-	mov	rsi, Input	;Read from Input buffer
+	call	getFirstVarName
+
+	mov	rdi, VarValu
+	mov	rcx, 26
 	mov	bl, ','		;Delimit with comma
-	
+	call	getString
+
+	mov	rdi, Temp
 	mov	rcx, 1024
-.loop:
-	mov	ah,[rsi]
-	call	isUpperCase
-	call	isLowerCase
-	movsb
-	dec	rcx
-	jnz	.loop
+	call	clearString
+
+	mov	rdi, Input
+	mov	rcx, 1024
+	mov	rsi, VarName
+	mov	rdx, 1024
+	mov	r8, VarValu
+	mov	r9,26
+	call	strReplaceAll
+;end getVarNames
 
 getFirstVarName:
 ;Puts the first variable found in Input to VarName
