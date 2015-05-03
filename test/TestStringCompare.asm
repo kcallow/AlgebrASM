@@ -40,12 +40,8 @@ _start:
 	dec	r9
 	jnz	.loop
 
-	mov	byte [CharIn], 10
-	mov	rsi, CharIn
-        mov     rax,1           ;call to system's 'write'
-        mov     rdi,1           ;write to the standard output
-        mov     rdx,1		;newline is single char
-        syscall
+	call	newline
+
 
 ;Get another string
 	mov	rdi, string2	;Write to input buffer
@@ -75,12 +71,8 @@ _start:
 	dec	r9
 	jnz	.loop2
 
-	mov	byte [CharIn], 10
-	mov	rsi, CharIn
-        mov     rax,1           ;call to system's 'write'
-        mov     rdi,1           ;write to the standard output
-        mov     rdx,1		;newline is single char
-        syscall
+
+	call	newline
 
 ;Compare strings. Print message
 	mov	rdi, string1
