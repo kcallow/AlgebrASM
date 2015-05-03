@@ -12,7 +12,7 @@ _start:
 
 	call	getAndReplaceFirstVar
 
-        mov     rsi,Temp
+        mov     rsi,Input
 	call	print
 
 	mov	rax,60
