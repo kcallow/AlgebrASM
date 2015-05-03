@@ -10,7 +10,7 @@ _start:
 
 	call	copyTemp2Input
 
-	call	getAndReplaceFirstVar
+	call	getAndReplaceAllVars
 
         mov     rsi,Input
 	call	print

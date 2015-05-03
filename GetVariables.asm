@@ -4,14 +4,14 @@ section .bss
 VarName	resb	1024	; 1024 char variable name
 VarValu	resb	26	; 64 bit integers are max 26 chars long
 
-section .data
+section	.text
 
-getAndReplaceFirstVar:
+getAndReplaceAllVars:
 	call	getFirstVarName
-	je	.end
+	jz	.end			;Stop when none were found.
 	mov	rsi, VarName
 	call	print
-	call	newline
+	call	equals
 	call	getVarValue
 
 	mov	rdi, Temp
@@ -19,9 +19,10 @@ getAndReplaceFirstVar:
 	call	clearString
 
 	call	replaceNameWithValue
+	jmp	getAndReplaceAllVars	;Try again if found a var.  
 .end:
 	ret
-;end getAndReplaceFirstVar
+;end getAndReplaceAllVars
 
 getFirstVarName:
 ;Puts the first variable found in Input to VarName
@@ -66,6 +67,8 @@ goToFirstLetter:
 
 getVarValue:
 	mov	rdi, VarValu
+	mov	rcx,26		;Erase 26 chars
+	call	clearString	;Erase previous data in VarValu
 	mov	rcx, 26
 	mov	bl, ','		;Delimit with comma
 	call	getString

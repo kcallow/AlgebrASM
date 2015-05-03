@@ -259,3 +259,13 @@ newline:
         syscall
 	ret
 ;end newline
+
+equals:
+	mov	byte [CharIn], '='
+	mov	rsi, CharIn
+        mov     rax,1           ;call to system's 'write'
+        mov     rdi,1           ;write to the standard output
+        mov     rdx,1		;equals is single char
+        syscall
+	ret
+;end equals
