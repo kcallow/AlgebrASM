@@ -4,6 +4,91 @@ CharIn	resb	1
 section	.text
 ;Stable:
 
+strReplace:
+;Finds rsi keyword in rdi string. 
+;Then writes rdi string to r10 result 
+;with rsi keyword substituted by r8 substitution.
+;Takes rsi keyword max len in rdx
+;Takes rdi string max len in rcx
+;Takes r8 substitution max len in r9
+;Takes r10 result max len in r11
+	mov	r15, rdi	;Preserve beginning of string
+	cmp	r11, rcx	;If insufficient space, do nothing
+	jl	.end
+	cmp	rbx,0		;If str was not found, end.  rbx is find counter
+	je	.end
+
+	call	strFind		;Sets rdi to first instance of keyword.  Gets lengths.
+	add	rdi, rdx	;Skip over keyword
+	call	clearR10Buffer
+	call	R8Len
+
+	xchg	rdi, r10	;Make the result buffer the destination
+	call 	copyBeforeMatch
+	call	copySubstitution
+	call	copyAfterSubstitution
+.end:
+	ret
+;end strReplace
+
+R8Len:
+	push	rdi
+	mov	rdi,r8		;To get lenght of r8, copy temorarily with rdi
+	xchg	rcx,r9		;Treat r9 as rcx to get rsi length
+	call	strLen		;Store r8 len in r9
+	xchg	rcx,r9
+	pop	rdi
+	ret
+;end R8Len
+
+clearR10Buffer:
+	push	rdi
+	push	rcx
+	mov	rdi, r10	;Make the result buffer the destination
+	mov	rcx, r11
+	call	clearString
+	pop	rcx
+	pop	rdi
+	ret
+;end clearR10Buffer
+
+copyBeforeMatch:
+	push	rsi
+	push	rcx
+	sub	rcx, rbx	;Get characters before match
+	sub	rcx, rdx	;Skip keyword in chars to read from original string
+	inc	rcx
+	mov	rsi, r15	;Use beginning of string as source
+	rep	movsb
+	pop	rcx
+	pop	rsi
+	ret
+;end copyBeforeMatch
+
+copySubstitution:
+	push	rsi
+	push	rcx
+	mov	rsi, r8		;Use substitution as source
+	mov	rcx, r9		;Use number of characters before match
+	rep	movsb
+	pop	rcx
+	pop	rsi
+	ret
+;end copySubstitution
+
+copyAfterSubstitution:
+	push	rsi
+	push	rcx
+	mov	rsi, r10	;Use original string as source
+	mov	rcx,rbx		;Use characters at and after match
+	sub	rcx,rdx		;Skip keyword in chars to read 
+	add	rcx, r9		;Add amount of chars in substitution
+	rep	movsb
+	pop	rcx
+	pop	rsi
+	ret
+;end copyAfterSubstitution
+
 strFind:
 ;Finds first instance of rsi keyword in rdi string 
 ;Increments rdi to that position
@@ -54,17 +139,19 @@ strLens:
 
 
 strLen:
-;Reads string in rdi
+;Reads string in rdi. Preserves its value
 ;Takes maximum length in rcx and decrements for each unused char
+	push	rdi
 .loop:	;Decrement for each null char at end of string
 	cmp	byte [rdi + rcx - 1],0
 	jne	.end		;If non null char found, stop decrementing
 	dec	rcx
 	jnz	.loop
 .end:
+	pop	rdi
 	ret
 ;end strLen
-	
+
 print:
         mov     rax,1           ;call to system's 'write'
         mov     rdi,1           ;write to the standard output
@@ -142,78 +229,3 @@ strReplaceAll:
 .end:
 	ret
 ;end strReplaceAll
-
-strReplace:
-;Finds rsi keyword in rdi string. 
-;Then writes rdi string to r10 result 
-;with rsi keyword substituted by r8 substitution.
-;Takes rsi keyword max len in rdx
-;Takes rdi string max len in rcx
-;Takes r8 substitution max len in r9
-;Takes r10 result max len in r11
-	cmp	r11, rcx	;If insufficient space, do nothing
-	jl	.end
-	cmp	rbx,0		;If str was not found, end.  rbx is find counter
-	je	.end
-
-	call	R8Len
-
-	mov	rax, rdi	;Preserve beginning of string
-	call	strFind		;Sets rdi to first instance of keyword.  Gets lengths.
-
-	add	rdi, rdx	;Skip keyword in original string
-
-	sub	rcx, rbx
-	mov	rbx, rcx	;Get characters before match
-	sub	rcx, rdx	;Skip keyword in chars to read from original string
-	
-	call	clearR10Buffer
-
-	call 	copyBeforeMatch
-	call	copySubstitution
-	call	copyAfterSubstitution
-.end:
-	ret
-;end strReplace
-
-R8Len:
-	xchg	rdi,rsi		;To get lenght of r8, swap temorarily with rdi
-	xchg	rcx,rdx		;Treat r9 as rcx to get rsi length
-	call	strLen		;Store r8 len in r9
-	xchg	rcx,rdx
-	xchg	rdi,rsi		
-	ret
-;end R8Len
-
-clearR10Buffer:
-	xchg	rdi, r10	;Make r10 the destination
-	xchg	rcx, r11
-	call	clearString
-	xchg	rcx, r11
-	ret
-;end clearR10Buffer
-
-copyBeforeMatch:
-	xchg	rsi, rax	;Use beggining of string as source
-	xchg	rcx, rbx	;Use number of characters before match
-	rep	movsb
-	xchg	rsi, rax	
-	xchg	rcx, rbx
-	ret
-;end copyBeforeMatch
-
-copySubstitution:
-	xchg	rsi, r8		;Use substitution string as source
-	xchg	rcx, r9		;Use source length
-	rep	movsb
-	xchg	rsi, r8		
-	xchg	rcx, r9	
-	ret
-;end copySubstitution
-	
-copyAfterSubstitution:
-	xchg	rsi, r10
-	rep	movsb	
-	xchg	rsi, r10
-	ret
-;end copyAfterSubstitution
