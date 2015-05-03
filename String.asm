@@ -6,10 +6,9 @@ section	.text
 
 strCompare:
 ;Compares str in rdi to str in rsi
-;Uses len of str in rdi.  Takes rcx as its maximum length.
+;Compares rcx chars
 	push	rsi
 	push	rdi
-	call	strLen		;Put len in rcx
 	rep	cmpsb
 	pop	rdi
 	pop	rsi
@@ -79,7 +78,7 @@ getChar:
 
 strLens:
 ;Gets lengths of rdi and rsi strings, puts in ecx and edx respectively
-	call	strLen		;Get actual length of rdi string, put in rcx
+	call	strLen		;Get length of rdi string, put in rcx
 
 	xchg	rdi,rsi		;To get lenght of rsi, swap temorarily with rdi
 	xchg	rcx,rdx		;Treat rdx as rcx to get rsi length
@@ -125,17 +124,24 @@ strReplace:
 ;strReplace
 
 strFind:
-;Finds first instance of rsi string in rdi string 
-;Takes rdi string len in rcx
-;Takes rsi string len in rdx
-	sub	rcx,rdx		;Read a until position strLen(rdi) - strLen(rsi)
+;Finds first instance of rsi keyword in rdi string 
+;Increments rdi to that position
+;Takes rdi string max len in rcx
+;Takes rsi keyword max len in rdx
+	call	strLens
+	;Read a until position strLen(rdi) - strLen(rsi) + 1
+	sub	rcx, rdx
 	mov	rbx,rcx		;Use rbx as counter for loop
+	inc	rbx
+	jl	.end		;If length of string is less than keyword, end
 .loop:
+	mov	rcx,rdx		;Compare the amount of chars in keyword
 	call	strCompare
 	je	.end
 	inc	rdi
 	dec	rbx
 	jnz	.loop		;If not found, try with next position
 .end:	
+	add	rbx,rdx		;rdx is the amount of characters at and after first instance of keyword
 	ret
 ;end strFind
