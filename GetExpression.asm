@@ -3,7 +3,6 @@
 section .bss
 Input	resb	1024
 Temp	resb	1024
-CharIn	resb	1
 
 section .data
 

@@ -4,16 +4,24 @@ VarValu	resb	26	; 64 bit integers are max 26 chars long
 
 getVarNames:
 	call	getFirstVarName
-
-	mov	rdi, VarValu
-	mov	rcx, 26
-	mov	bl, ','		;Delimit with comma
-	call	getString
+	call	getVarValue
 
 	mov	rdi, Temp
 	mov	rcx, 1024
 	call	clearString
 
+	call	replaceNameWithValue
+;end getVarNames
+
+getVarValue:
+	mov	rdi, VarValu
+	mov	rcx, 26
+	mov	bl, ','		;Delimit with comma
+	call	getString
+	ret
+;end getVarValue
+
+replaceNameWithValue:
 	mov	rdi, Input
 	mov	rcx, 1024
 	mov	rsi, VarName
@@ -21,7 +29,8 @@ getVarNames:
 	mov	r8, VarValu
 	mov	r9,26
 	call	strReplaceAll
-;end getVarNames
+	ret
+;end replaceNameWithValue:
 
 getFirstVarName:
 ;Puts the first variable found in Input to VarName
