@@ -113,7 +113,7 @@ strReplace:
 	push	rsi
 	push	rcx
 	mov	rsi, r8		;Use substitution as source
-	mov	rcx, r9		;Use number of characters before match
+	mov	rcx, r9		;Use len of substitution
 	rep	movsb
 	pop	rcx
 	pop	rsi
@@ -125,8 +125,10 @@ strReplace:
 	push	rcx
 	mov	rsi, r10	;Use original string as source
 	mov	rcx,rbx		;Use characters at and after match
-	sub	rcx,rdx		;Skip keyword in chars to read 
-	add	rcx, r9		;Add amount of chars in substitution
+	sub	rdx, r9
+	jg	.skip
+	neg	rdx
+.skip:	add	rcx,rdx		;Skip keyword in chars to read 
 	rep	movsb
 	pop	rcx
 	pop	rsi
