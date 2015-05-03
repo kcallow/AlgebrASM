@@ -12,6 +12,15 @@ strReplace:
 ;Takes rdi string max len in rcx
 ;Takes r8 substitution max len in r9
 ;Takes r10 result max len in r11
+	push	rsi
+	push	rdx
+	push	rdi
+	push	rcx
+	push	r8
+	push	r9
+	push	r10
+	push	r11
+
 	mov	r15, rdi	;Preserve beginning of string
 	cmp	r11, rcx	;If insufficient space, do nothing
 	jl	.end
@@ -20,18 +29,25 @@ strReplace:
 
 	call	strFind		;Sets rdi to first instance of keyword.  Gets lengths.
 	add	rdi, rdx	;Skip over keyword
-	call	clearR10Buffer
-	call	R8Len
+	call	.clearR10Buffer
+	call	.R8Len
 
 	xchg	rdi, r10	;Make the result buffer the destination
-	call 	copyBeforeMatch
-	call	copySubstitution
-	call	copyAfterSubstitution
+	call 	.copyBeforeMatch
+	call	.copySubstitution
+	call	.copyAfterSubstitution
 .end:
+	pop	r11
+	pop	r10
+	pop	r9
+	pop	r8
+	pop	rcx
+	pop	rdi
+	pop	rdx
+	pop	rsi
 	ret
-;end strReplace
 
-R8Len:
+.R8Len:
 	push	rdi
 	mov	rdi,r8		;To get lenght of r8, copy temorarily with rdi
 	xchg	rcx,r9		;Treat r9 as rcx to get rsi length
@@ -39,9 +55,9 @@ R8Len:
 	xchg	rcx,r9
 	pop	rdi
 	ret
-;end R8Len
+;end .R8Len
 
-clearR10Buffer:
+.clearR10Buffer:
 	push	rdi
 	push	rcx
 	mov	rdi, r10	;Make the result buffer the destination
@@ -50,9 +66,9 @@ clearR10Buffer:
 	pop	rcx
 	pop	rdi
 	ret
-;end clearR10Buffer
+;end .clearR10Buffer
 
-copyBeforeMatch:
+.copyBeforeMatch:
 	push	rsi
 	push	rcx
 	sub	rcx, rbx	;Get characters before match
@@ -63,9 +79,9 @@ copyBeforeMatch:
 	pop	rcx
 	pop	rsi
 	ret
-;end copyBeforeMatch
+;end .copyBeforeMatch
 
-copySubstitution:
+.copySubstitution:
 	push	rsi
 	push	rcx
 	mov	rsi, r8		;Use substitution as source
@@ -74,9 +90,9 @@ copySubstitution:
 	pop	rcx
 	pop	rsi
 	ret
-;end copySubstitution
+;end .copySubstitution
 
-copyAfterSubstitution:
+.copyAfterSubstitution:
 	push	rsi
 	push	rcx
 	mov	rsi, r10	;Use original string as source
@@ -87,7 +103,8 @@ copyAfterSubstitution:
 	pop	rcx
 	pop	rsi
 	ret
-;end copyAfterSubstitution
+;end .copyAfterSubstitution
+;end strReplace
 
 strFind:
 ;Finds first instance of rsi keyword in rdi string 
@@ -225,7 +242,20 @@ strReplaceAll:
 	call	strReplace
 	cmp	rbx,0		;If str was not found, end.  rbx is find counter
 	je	.end
+	call	.copy
 	jmp	.loop
 .end:
 	ret
+
+.copy:
+	push	rsi
+	push	rdi
+	push	rcx
+	mov	rsi, r10
+	rep	movsb
+	pop	rcx
+	pop	rdi
+	pop	rsi
+	ret
+;end .copy
 ;end strReplaceAll

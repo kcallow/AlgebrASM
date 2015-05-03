@@ -36,12 +36,21 @@ _start:
 	mov	rdx,1024	;1024 chars max length
 	mov	r9,1024		;1024 chars max length
 	mov	r11,1024	;1024 chars max length
-	call	strReplace
-
-	mov	rsi, result
-	call	print
+	call	strReplaceAll
+	call 	printOrigin
 
 	mov	rax,60
 	mov	rdi,0
 	syscall
 ;end _start
+
+printOrigin:
+	push	rsi
+	push	rcx
+	mov	rsi, origin
+	call	print
+	pop	rcx
+	pop	rsi
+	ret
+;end printOrigin
+
