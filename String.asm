@@ -2,7 +2,35 @@ section	.bss
 CharIn	resb	1
 
 section	.text
-;Stable:
+
+strReplaceAll:
+;Replaces all instances of rsi string in rdi string with r8 string
+;Writes result to buffer in r10
+;Takes rdi string len in rcx
+;Takes rsi string len in rdx
+;Takes r8 string len in r9
+;Takes result max len in r11
+.loop:
+	call	strReplace
+	cmp	rbx,0		;If str was not found, end.  rbx is find counter
+	je	.end
+	call	.copy
+	jmp	.loop
+.end:
+	ret
+
+.copy:
+	push	rsi
+	push	rdi
+	push	rcx
+	mov	rsi, r10
+	rep	movsb
+	pop	rcx
+	pop	rdi
+	pop	rsi
+	ret
+;end .copy
+;end strReplaceAll
 
 strReplace:
 ;Finds rsi keyword in rdi string. 
@@ -229,33 +257,3 @@ newline:
         syscall
 	ret
 ;end newline
-
-;Unstable:
-strReplaceAll:
-;Replaces all instances of rsi string in rdi string with r8 string
-;Writes result to buffer in r10
-;Takes rdi string len in rcx
-;Takes rsi string len in rdx
-;Takes r8 string len in r9
-;Takes result max len in r11
-.loop:
-	call	strReplace
-	cmp	rbx,0		;If str was not found, end.  rbx is find counter
-	je	.end
-	call	.copy
-	jmp	.loop
-.end:
-	ret
-
-.copy:
-	push	rsi
-	push	rdi
-	push	rcx
-	mov	rsi, r10
-	rep	movsb
-	pop	rcx
-	pop	rdi
-	pop	rsi
-	ret
-;end .copy
-;end strReplaceAll

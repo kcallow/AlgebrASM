@@ -1,9 +1,17 @@
+%include "Implicit2ExplicitMul.asm"
+
 section .bss
 VarName	resb	1024	; 1024 char variable name
 VarValu	resb	26	; 64 bit integers are max 26 chars long
 
-getVarNames:
+section .data
+
+getAndReplaceFirstVar:
 	call	getFirstVarName
+	je	.end
+	mov	rsi, VarName
+	call	print
+	call	newline
 	call	getVarValue
 
 	mov	rdi, Temp
@@ -11,26 +19,9 @@ getVarNames:
 	call	clearString
 
 	call	replaceNameWithValue
-;end getVarNames
-
-getVarValue:
-	mov	rdi, VarValu
-	mov	rcx, 26
-	mov	bl, ','		;Delimit with comma
-	call	getString
+.end:
 	ret
-;end getVarValue
-
-replaceNameWithValue:
-	mov	rdi, Input
-	mov	rcx, 1024
-	mov	rsi, VarName
-	mov	rdx, 1024
-	mov	r8, VarValu
-	mov	r9,26
-	call	strReplaceAll
-	ret
-;end replaceNameWithValue:
+;end getAndReplaceFirstVar
 
 getFirstVarName:
 ;Puts the first variable found in Input to VarName
@@ -41,17 +32,19 @@ getFirstVarName:
 	
 	call	goToFirstLetter	
 	cmp	rsi, Temp	;If searched all of Input without finding letter, end
-	je	.end
+	jz	.end
+
 .loop:
 	movsb			;Write letter to VarName and keep reading if Input not done 
-	;Write while reading letters
-	cmp	rsi, Temp	;If searched all of Input, end
+	dec	rcx		;rcx is counter for previous loop.  Holds chars after first letter
+	;If searched all of Input without finding letter, end
 	je	.end
 	
+	;Write while reading letters
 	mov	ah,[rsi]
 	call	isLetter
 	jz	.loop		;Stop writing if char not letter because found end of variable name
-	
+
 .end:
 	ret
 ;end getFirstVarName
@@ -71,3 +64,23 @@ goToFirstLetter:
 	ret
 ;end goToFirstLetter
 
+getVarValue:
+	mov	rdi, VarValu
+	mov	rcx, 26
+	mov	bl, ','		;Delimit with comma
+	call	getString
+	ret
+;end getVarValue
+
+replaceNameWithValue:
+	mov	rdi, Input
+	mov	rcx, 1024
+	mov	rsi, VarName
+	mov	rdx, 1024
+	mov	r8, VarValu
+	mov	r9,26
+	mov	r10, Temp
+	mov	r11, 1024
+	call	strReplaceAll
+	ret
+;end replaceNameWithValue:
