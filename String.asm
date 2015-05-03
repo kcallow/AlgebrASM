@@ -4,6 +4,18 @@ CharIn	resb	1
 section	.text
 ;Stable:
 
+strCompare:
+;Compares str in rdi to str in rsi
+;Uses len of str in rdi.  Takes rcx as its maximum length.
+	push	rsi
+	push	rdi
+	call	strLen		;Put len in rcx
+	rep	cmpsb
+	pop	rdi
+	pop	rsi
+	ret
+;end strCompare
+
 strLen:
 ;Reads string in rdi
 ;Takes maximum length in rcx and decrements for each unused char
@@ -48,6 +60,7 @@ getString:
 	dec	rcx		;Unless more than 1024
 	jnz	.loop
 .end:
+	call	getChar		;Consume final newline
 	ret
 ;end getString
 
@@ -126,16 +139,3 @@ strFind:
 .end:	
 	ret
 ;end strFind
-
-strCompare:
-;Compares str in rdi to str in rsi
-;Uses len of str in rdi.  Takes rcx as its maximum length.
-	push	rsi
-	push	rdi
-	call	strLen		;Put len in rcx
-	rep	cmpsb
-	pop	rdi
-	pop	rsi
-	ret
-;end strCompare
-
