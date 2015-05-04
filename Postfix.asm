@@ -1,14 +1,14 @@
-%include "GetExpression.asm"
+%include "GetVariables.asm"
 
 section .bss
 Stack	resb	1024
 
 section	.data
 Operators	db	'*/+-'
-OpLen		db	$ - Operators
+OpLen		equ	$ - Operators
 OpPrecedence	db	'1122'
 Error		db	'Error: invalid parenthesis.',10
-ErrorLen	db	$ - Error
+ErrorLen	equ	$ - Error
 
 section	.text
 postfix:
@@ -23,17 +23,25 @@ postfix:
 	je	.skip
 	call	testOperator
 	je	.skip
-	call	testRightBrace
+;	call	testRightBrace
 .skip:
+;	call	equals
 	cmp	rsi, Temp
 	jne	.loop
 
+	call	newline
+	call	printStack
+	call	newline
 	ret
 ;end postfix
 
 testNumber:
+	mov	ah,al
 	call	isDigit
 	jne	.end
+	;call	equals
+	;mov	byte [rdi], al
+	;inc	rdi
 	stosb
 .end:	ret
 ;end testNumber
@@ -44,6 +52,20 @@ testLeftBrace:
 	call	push2Stack
 .end:	ret
 ;end testLeftBrace
+
+printStack:
+	push	rsi
+	push	rax
+	push	rdi
+	push	rdx
+	mov	rsi, Stack
+	call	print
+	pop	rdx
+	pop	rdi
+	pop	rax
+	pop	rsi
+	ret
+;end printStack
 
 testOperator:
 	call	isOperator
@@ -57,26 +79,34 @@ testOperator:
 	call	stackEmpty
 	jne	.operatorLoop
 .skip:	call	push2Stack
+	call	addSpace
 .end:	ret
 ;end testOperator
 
 isOperator:
 	mov	rcx, OpLen
 .loop:
-	cmp	[Operators+rcx], al
+	call	equals
+	cmp	[Operators+rcx-1], al
 	je	.end
 	dec	rcx
-	jnz	.loop
+	jz	.notOp
+	jmp	.loop
+.notOp:
+	inc	rcx
 .end:
+	call	newline
 	ret
 ;end isOperator
 
 cmpPrecedence:
-	mov	bl, [OpPrecedence + rcx]
-	mov	ah, [r8]
+	mov	bl, [OpPrecedence + rcx - 1]
+	xchg	r8, rbx
+	mov	ah, [rbx]
+	xchg	r8, rbx
 	xchg	ah,al
 	call	isOperator
-	mov	bh, [OpPrecedence + rcx]
+	mov	bh, [OpPrecedence + rcx - 1]
 	xchg	ah,al
 	cmp	bh, bl
 	ret
@@ -88,7 +118,7 @@ testRightBrace:
 .loop:
 	call	stackEmpty
 	je	.error
-	cmp	[r8], '('
+	cmp	byte [r8], '('
 	je	.end
 	call	pop2String
 	jmp	.loop
@@ -116,6 +146,12 @@ pop2String:
 	stosb
 	ret
 ;end pop2String
+
+addSpace:
+	mov	al, ' '
+	stosb
+	ret
+;end addSpace
 
 invalidBraces:
 	mov	rsi, Error

@@ -4,7 +4,7 @@ section .bss
 Input	resb	1024
 Temp	resb	1024
 
-section .data
+section .text
 
 removeWhitespace:
 	mov	rsi,Input 	;Read characters from Input

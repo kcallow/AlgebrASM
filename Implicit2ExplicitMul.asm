@@ -1,6 +1,6 @@
 %include "GetExpression.asm"
 
-section .data
+section .text
 
 addAsterisks:
 	mov	rsi,Input 	;Read characters from Input
@@ -46,7 +46,7 @@ isAlphaNum:
 	call	isLetter	;If letter, zf is set and returns
 .end:
 	ret
-;end isDigit
+;end isAlphaNum
 
 isLetter:
 ;Sets zf if ah is letter

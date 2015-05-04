@@ -251,21 +251,41 @@ getChar:
 ;end getChar
 
 newline:
+	push	rcx
+	push	rsi
+	push	rax
+	push	rdi
+	push	rdx
 	mov	byte [CharIn], 10
 	mov	rsi, CharIn
         mov     rax,1           ;call to system's 'write'
         mov     rdi,1           ;write to the standard output
         mov     rdx,1		;newline is single char
         syscall
+	pop	rdx
+	pop	rdi
+	pop	rax
+	pop	rsi
+	pop	rcx
 	ret
 ;end newline
 
 equals:
+	push	rcx
+	push	rsi
+	push	rax
+	push	rdi
+	push	rdx
 	mov	byte [CharIn], '='
 	mov	rsi, CharIn
         mov     rax,1           ;call to system's 'write'
         mov     rdi,1           ;write to the standard output
         mov     rdx,1		;equals is single char
         syscall
+	pop	rdx
+	pop	rdi
+	pop	rax
+	pop	rsi
+	pop	rcx
 	ret
 ;end equals
