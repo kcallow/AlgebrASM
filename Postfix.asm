@@ -74,7 +74,8 @@ testOperator:
 	je	.skip
 .operatorLoop:
 	call	cmpPrecedence
-	jle	.skip
+	jne	.skip
+	call	equals
 	call	pop2String
 	call	stackEmpty
 	jne	.operatorLoop
@@ -86,7 +87,6 @@ testOperator:
 isOperator:
 	mov	rcx, OpLen
 .loop:
-	call	equals
 	cmp	[Operators+rcx-1], al
 	je	.end
 	dec	rcx
@@ -95,11 +95,12 @@ isOperator:
 .notOp:
 	inc	rcx
 .end:
-	call	newline
 	ret
 ;end isOperator
 
 cmpPrecedence:
+	push	rax
+	call	isOperator
 	mov	bl, [OpPrecedence + rcx - 1]
 	xchg	r8, rbx
 	mov	ah, [rbx]
@@ -109,6 +110,7 @@ cmpPrecedence:
 	mov	bh, [OpPrecedence + rcx - 1]
 	xchg	ah,al
 	cmp	bh, bl
+	pop	rax
 	ret
 ;end cmpPrecedence
 
