@@ -4,7 +4,7 @@ global _start
 _start:
 	mov	rdi, Input	;Write to input buffer
 	mov	bl, ','		;Comma is delimitor for input
-	mov	rcx,1024	;Read 1024 chars max
+	mov	rcx,21*BUFSIZE	;Read 21 buffers
 	call	getString
 	call	removeWhitespace
 
@@ -14,9 +14,10 @@ _start:
 	call	print
 
 	mov	rdi,Input
-	mov	rcx,1024	;Do for all 1024 chars in string
+	mov	rcx,21*BUFSIZE	;Do for all 21 buffers
 	call	clearString
 
+        mov     rsi,Input
 	call	print
 
 	mov	rax,60

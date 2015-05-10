@@ -25,7 +25,6 @@ postfix:
 	je	.skip
 ;	call	testRightBrace
 .skip:
-;	call	equals
 	cmp	rsi, Temp
 	jne	.loop
 
@@ -39,9 +38,6 @@ testNumber:
 	mov	ah,al
 	call	isDigit
 	jne	.end
-	;call	equals
-	;mov	byte [rdi], al
-	;inc	rdi
 	stosb
 .end:	ret
 ;end testNumber
@@ -99,8 +95,8 @@ isOperator:
 ;end isOperator
 
 cmpPrecedence:
-	push	rax
-	call	isOperator
+;	push	rax
+;	call	isOperator
 	mov	bl, [OpPrecedence + rcx - 1]
 	xchg	r8, rbx
 	mov	ah, [rbx]
@@ -109,8 +105,40 @@ cmpPrecedence:
 	call	isOperator
 	mov	bh, [OpPrecedence + rcx - 1]
 	xchg	ah,al
-	cmp	bh, bl
+	push	rcx
+	push	rsi
+	push	rax
+	push	rdi
+	push	rdx
+	mov	byte [CharIn], bh
+	mov	rsi, CharIn
+        mov     rax,1           ;call to system's 'write'
+        mov     rdi,1           ;write to the standard output
+        mov     rdx,1		;equals is single char
+        syscall
+	pop	rdx
+	pop	rdi
 	pop	rax
+	pop	rsi
+	pop	rcx
+	push	rcx
+	push	rsi
+	push	rax
+	push	rdi
+	push	rdx
+	mov	byte [CharIn], bl
+	mov	rsi, CharIn
+        mov     rax,1           ;call to system's 'write'
+        mov     rdi,1           ;write to the standard output
+        mov     rdx,1		;equals is single char
+        syscall
+	pop	rdx
+	pop	rdi
+	pop	rax
+	pop	rsi
+	pop	rcx
+	cmp	bh, bl
+;	pop	rax
 	ret
 ;end cmpPrecedence
 

@@ -1,3 +1,6 @@
+section .data
+BUFSIZE	equ	1024
+
 section	.bss
 CharIn	resb	1
 
@@ -202,7 +205,7 @@ strLen:
 print:
         mov     rax,1           ;call to system's 'write'
         mov     rdi,1           ;write to the standard output
-        mov     rdx,1024        ;input is at most 1024 chars
+        mov     rdx,21*BUFSIZE        ;input is at most BUFSIZE chars
         syscall
 	ret
 ;end print
@@ -223,30 +226,39 @@ getString:
 ;Puts to string given by rdi
 ;Reads separator character from bl
 ;Reads maximum of rcx chars
+;r8 holds chars to next buffer
+	mov	r8, BUFSIZE
 .loop:
-	push	rdi
-	push	rcx
 	call	getChar
-	pop	rcx
-	pop	rdi
-	cmp	bl,al		;If separator found, end.
+	cmp	rax,0		;If no chars found, end.
 	je	.end
+
+	mov	al,[CharIn]
+	cmp	bl,al		;If separator found, end.
+	je	.nextBuffer
 	stosb			;Else write char
-	dec	rcx		;Unless more than 1024
+	dec	r8
+	dec	rcx		;Unless more than size
 	jnz	.loop
 .end:
 	call	getChar		;Consume final newline
 	ret
+	
+.nextBuffer:
+	add	rdi,r8		;Go to next buffer
+	mov	r8, BUFSIZE
+	jmp	.loop
 ;end getString
 
 getChar:
-;Puts char from stdin to al
+;Puts char from stdin to CharIn
+	push	rdi
         mov     rax,0           ;sys_read
 	mov     rdi,0           ;Read from std input
 	mov	rsi,CharIn
 	mov     rdx,1		;read 1 character
 	syscall
-	mov	al,[CharIn]
+	pop	rdi
 	ret
 ;end getChar
 
