@@ -13,7 +13,6 @@ strReplaceAll:
 ;Takes rsi string max len in rdx
 ;Takes r8 string max len in r9
 ;Takes result max len in r11
-	call	strLens
 .loop:
 	call	strReplace
 	cmp	rbx,0		;If str was not found, end.  rbx is find counter
@@ -52,6 +51,7 @@ strReplace:
 	push	r9
 	push	r10
 	push	r11
+	call	strLens
 
 	mov	r15, rdi	;Preserve beginning of string
 	cmp	r11, rcx	;If insufficient space, do nothing

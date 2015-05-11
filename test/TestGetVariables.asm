@@ -11,8 +11,8 @@ _start:
 
 	call	getAndReplaceAllVars
 
-        mov     rsi,Temp
-	call	print
+        mov     rsi,Input
+	call	printBuffer
 
 	mov	rax,60
 	mov	rdi,0

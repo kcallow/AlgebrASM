@@ -31,12 +31,6 @@ _start:
 	mov	r9,BUFSIZE	;BUFSIZE chars max length
 	mov	r11,BUFSIZE	;BUFSIZE chars max length
 	call	strReplaceAll
-	mov	rsi, origin
-	call	printBuffer
-	mov	rsi, keyword
-	call	printBuffer
-	mov	rsi, subs
-	call	printBuffer
 	call 	printResult
 
 	mov	rax,60
