@@ -210,6 +210,15 @@ print:
 	ret
 ;end print
 
+
+printBuffer:
+        mov     rax,1           ;call to system's 'write'
+        mov     rdi,1           ;write to the standard output
+        mov     rdx,BUFSIZE        ;input is at most BUFSIZE chars
+        syscall
+	ret
+;end printBuffer
+
 clearString:
 ;Clears rcx bytes from string in rdi
 	push	rdi
@@ -239,6 +248,7 @@ getString:
 	stosb			;Else write char
 	dec	r8
 	dec	rcx		;Unless more than size
+.continue:
 	jnz	.loop
 .end:
 	call	getChar		;Consume final newline
@@ -246,8 +256,9 @@ getString:
 	
 .nextBuffer:
 	add	rdi,r8		;Go to next buffer
+	sub	rcx,r8
 	mov	r8, BUFSIZE
-	jmp	.loop
+	jmp	.continue
 ;end getString
 
 getChar:
