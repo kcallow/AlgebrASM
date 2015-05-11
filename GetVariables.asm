@@ -13,11 +13,8 @@ getAndReplaceAllVars:
 	add	rsi,BUFSIZE	;Skip expression buffer
 .loop:
 	call	.loopBody
-	call	.loopBody
-	call	.loopBody
-	call	.loopBody
-;	cmp	rsi, Temp	;If no more buffers, end
-;	jnz	.loop
+	cmp	rsi, Temp	;If no more buffers, end
+	jnz	.loop
 .end:
 	ret
 
@@ -29,8 +26,6 @@ getAndReplaceAllVars:
 	call	copyExpression
 	pop	rsi
 	add	rsi,BUFSIZE	;Go to next buffer
-	call	newline
-	call	printVar
 	ret
 ;end .loopBody
 

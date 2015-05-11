@@ -49,6 +49,7 @@ read:
 	mov	rdi,0
 	mov	rdx,BUFSIZE
 	syscall
+	mov	[rsi+rax-1], byte 0
 	ret
 ;end read
 

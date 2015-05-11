@@ -9,10 +9,11 @@ section	.text
 strReplaceAll:
 ;Replaces all instances of rsi string in rdi string with r8 string
 ;Writes result to buffer in r10
-;Takes rdi string len in rcx
-;Takes rsi string len in rdx
-;Takes r8 string len in r9
+;Takes rdi string max len in rcx
+;Takes rsi string max len in rdx
+;Takes r8 string max len in r9
 ;Takes result max len in r11
+	call	strLens
 .loop:
 	call	strReplace
 	cmp	rbx,0		;If str was not found, end.  rbx is find counter
@@ -39,9 +40,9 @@ strReplace:
 ;Finds rsi keyword in rdi string. 
 ;Then writes rdi string to r10 result 
 ;with rsi keyword substituted by r8 substitution.
-;Takes rsi keyword max len in rdx
-;Takes rdi string max len in rcx
-;Takes r8 substitution max len in r9
+;Takes rsi keyword len in rdx
+;Takes rdi string len in rcx
+;Takes r8 substitution len in r9
 ;Takes r10 result max len in r11
 	push	rsi
 	push	rdx
@@ -55,13 +56,13 @@ strReplace:
 	mov	r15, rdi	;Preserve beginning of string
 	cmp	r11, rcx	;If insufficient space, do nothing
 	jl	.end
+
+	call	strFind		;Sets rdi to first instance of keyword.
 	cmp	rbx,0		;If str was not found, end.  rbx is find counter
 	je	.end
 
-	call	strFind		;Sets rdi to first instance of keyword.  Gets lengths.
 	add	rdi, rdx	;Skip over keyword
 	call	.clearR10Buffer
-	call	.R8Len
 
 	xchg	rdi, r10	;Make the result buffer the destination
 	call 	.copyBeforeMatch
@@ -77,16 +78,6 @@ strReplace:
 	pop	rdx
 	pop	rsi
 	ret
-
-.R8Len:
-	push	rdi
-	mov	rdi,r8		;To get lenght of r8, copy temorarily with rdi
-	xchg	rcx,r9		;Treat r9 as rcx to get rsi length
-	call	strLen		;Store r8 len in r9
-	xchg	rcx,r9
-	pop	rdi
-	ret
-;end .R8Len
 
 .clearR10Buffer:
 	push	rdi
@@ -142,9 +133,8 @@ strReplace:
 strFind:
 ;Finds first instance of rsi keyword in rdi string 
 ;Increments rdi to that position
-;Takes rdi string max len in rcx
-;Takes rsi keyword max len in rdx
-	call	strLens
+;Takes rdi string len in rcx
+;Takes rsi keyword len in rdx
 	;Read a until position strLen(rdi) - strLen(rsi) + 1
 	mov	rbx,rcx		;Use rbx as counter for loop
 	sub	rbx, rdx
@@ -176,17 +166,31 @@ strCompare:
 ;end strCompare
 
 strLens:
-;Gets lengths of rdi and rsi strings, puts in rcx and rdx respectively
-	call	strLen		;Get length of rdi string, put in rcx
+	call	strLen
+	call	rsiLen
+	call	r8Len
+	ret
+;end strLens
 
+r8Len:
+;Gets length of r8 string, puts in r9
+	xchg	rdi,r8		;To get lenght of r8, swap temorarily with rdi
+	xchg	rcx,r9		;Treat r9 as rcx to get rsi max length
+	call	strLen		;Store r8 len in r9
+	xchg	rcx,r9
+	xchg	rdi,r8		;Unswap
+	ret
+;end r8Len
+
+rsiLen:
+;Gets length of rsi string, puts in rdx
 	xchg	rdi,rsi		;To get lenght of rsi, swap temorarily with rdi
-	xchg	rcx,rdx		;Treat rdx as rcx to get rsi length
+	xchg	rcx,rdx		;Treat rdx as rcx to get rsi max length
 	call	strLen		;Store rsi len in rdx
 	xchg	rcx,rdx
 	xchg	rdi,rsi		
 	ret
-;end strLens
-
+;end rsiLen
 
 strLen:
 ;Reads string in rdi. Preserves its value
