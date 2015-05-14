@@ -28,6 +28,8 @@ postfix:
 	cmp	rsi, Input + BUFSIZE
 	jne	.loop
 
+	call	popFinal
+
 	call	newline
 	call	printStack
 	call	newline
@@ -71,7 +73,7 @@ testOperator:
 
 .operatorLoop:
 	call	cmpPrecedence
-	jle	.skip
+	jg	.skip
 	call	pop2String
 	call	stackEmpty
 	jne	.operatorLoop
@@ -164,6 +166,16 @@ testRightBrace:
 	dec	r8
 	ret
 ;end testRightBrace
+
+popFinal:
+;While stack not empty, pop to string
+.loop:
+	call	stackEmpty
+	je	.end
+	call	pop2String
+	jmp	.loop
+.end:	ret
+;end popFinal
 
 stackEmpty:
 	cmp	r8, Stack
