@@ -1,4 +1,4 @@
-ection .bss
+section .bss
            
             textIn:         resb 1024
             lenTextIn:      equ $ - textIn
