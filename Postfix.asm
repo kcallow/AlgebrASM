@@ -21,7 +21,7 @@ postfix:
 	je	.skip
 	call	testOperator
 	je	.skip
-;	call	testRightBrace
+	call	testRightBrace
 .skip:
 	cmp	rsi, Input + BUFSIZE
 	jne	.loop
@@ -92,6 +92,7 @@ cmpPrecedence:
 	xchg	ah,al
 	xchg	bh,bl
 	call	isOperator
+	jne	.foundParen		;If a paren, skip to end
 	call	getPrecedence
 	xchg	ah,al
 	xchg	bh,bl
@@ -118,8 +119,11 @@ cmpPrecedence:
 	pop	rsi
 	pop	rcx
 	cmp	bh, bl
-;	pop	rax
-.skip	ret
+	ret
+
+.foundParen:
+	xchg	ah,al
+	ret
 ;end cmpPrecedence
 
 getPrecedence:
@@ -132,16 +136,15 @@ testRightBrace:
 	jne	.end
 .loop:
 	call	stackEmpty
-	je	.error
+	je	invalidBraces
 	call	getTop
 	cmp	ah, '('
-	je	.end
+	je	.skip
 	call	pop2String
 	jmp	.loop
-.error:	
-	call	invalidBraces
-.end:	
+.skip:
 	dec	r8
+.end:	
 	ret
 ;end testRightBrace
 
@@ -151,6 +154,8 @@ popFinal:
 	call	stackEmpty
 	je	.end
 	call	pop2String
+	cmp	byte [rdi-1],'(' 	;If just popped left paren, error bitch
+	je	invalidBraces
 	jmp	.loop
 .end:	ret
 ;end popFinal
@@ -165,7 +170,8 @@ invalidBraces:
 	mov	rsi, Error
         mov     rax,1           ;call to system's 'write'
         mov     rdi,1           ;write to the standard output
-        mov     rdx,ErrorLen    ;input is at most 1024 chars
+        mov     rdx,ErrorLen    
+	syscall
 
 	mov	rax,60
 	mov	rdi,-1
