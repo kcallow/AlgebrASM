@@ -31,7 +31,6 @@ postfix:
 	call	popFinal
 
 	call	newline
-	call	printStack
 	call	newline
 	ret
 ;end postfix
@@ -78,10 +77,12 @@ testOperator:
 	call	stackEmpty
 	jne	.operatorLoop
 
-.skip:	
-	call	equals
+.skip:
 	call	push2Stack
 	call	addSpace
+	call	newline
+	call	printStack
+	call	newline
 	cmp	rax,rax		;Set zf
 .end:	ret
 ;end testOperator
@@ -189,9 +190,11 @@ push2Stack:
 ;end push2Stack
 
 pop2String:
+	push	rax
 	dec	r8
 	mov	al, [r8]
 	stosb
+	pop	rax
 	ret
 ;end pop2String
 
