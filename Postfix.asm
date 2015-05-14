@@ -16,7 +16,7 @@ postfix:
 	mov	rdi, Temp
 	mov	r8, Stack	;Use r8 as stack pointer
 .loop:
-	lodsb		;Put current char in al
+	lodsb		;Put current char in al, inc rsi
 	call	testNumber
 	je	.skip
 	call	testLeftBrace
@@ -25,7 +25,7 @@ postfix:
 	je	.skip
 ;	call	testRightBrace
 .skip:
-	cmp	rsi, Temp
+	cmp	rsi, Input + BUFSIZE
 	jne	.loop
 
 	call	newline
@@ -68,15 +68,19 @@ testOperator:
 	jne	.end
 	call	stackEmpty
 	je	.skip
+
 .operatorLoop:
 	call	cmpPrecedence
-	jne	.skip
-	call	equals
+	jle	.skip
 	call	pop2String
 	call	stackEmpty
 	jne	.operatorLoop
-.skip:	call	push2Stack
+
+.skip:	
+	call	equals
+	call	push2Stack
 	call	addSpace
+	cmp	rax,rax		;Set zf
 .end:	ret
 ;end testOperator
 
@@ -95,16 +99,15 @@ isOperator:
 ;end isOperator
 
 cmpPrecedence:
-;	push	rax
-;	call	isOperator
-	mov	bl, [OpPrecedence + rcx - 1]
-	xchg	r8, rbx
-	mov	ah, [rbx]
-	xchg	r8, rbx
-	xchg	ah,al
 	call	isOperator
-	mov	bh, [OpPrecedence + rcx - 1]
+	call	getPrecedence
+	call	getTop
 	xchg	ah,al
+	xchg	bh,bl
+	call	isOperator
+	call	getPrecedence
+	xchg	ah,al
+	xchg	bh,bl
 	push	rcx
 	push	rsi
 	push	rax
@@ -116,16 +119,6 @@ cmpPrecedence:
         mov     rdi,1           ;write to the standard output
         mov     rdx,1		;equals is single char
         syscall
-	pop	rdx
-	pop	rdi
-	pop	rax
-	pop	rsi
-	pop	rcx
-	push	rcx
-	push	rsi
-	push	rax
-	push	rdi
-	push	rdx
 	mov	byte [CharIn], bl
 	mov	rsi, CharIn
         mov     rax,1           ;call to system's 'write'
@@ -139,8 +132,20 @@ cmpPrecedence:
 	pop	rcx
 	cmp	bh, bl
 ;	pop	rax
-	ret
+.skip	ret
 ;end cmpPrecedence
+
+getPrecedence:
+	mov	bl, [OpPrecedence + rcx - 1]
+	ret
+;end getPrecedence
+
+getTop:
+	xchg	r8, rbx
+	mov	ah, [rbx-1]
+	xchg	r8, rbx
+	ret
+;end getTop
 
 testRightBrace:
 	cmp	al, ')'
@@ -148,7 +153,8 @@ testRightBrace:
 .loop:
 	call	stackEmpty
 	je	.error
-	cmp	byte [r8], '('
+	call	getTop
+	cmp	ah, '('
 	je	.end
 	call	pop2String
 	jmp	.loop
@@ -171,8 +177,8 @@ push2Stack:
 ;end push2Stack
 
 pop2String:
-	mov	al, [r8]
 	dec	r8
+	mov	al, [r8]
 	stosb
 	ret
 ;end pop2String
