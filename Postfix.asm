@@ -1,7 +1,5 @@
 %include "GetVariables.asm"
-
-section .bss
-Stack	resb	1024
+%include "Stack.asm"
 
 section	.data
 Operators	db	'*/+-'
@@ -49,20 +47,6 @@ testLeftBrace:
 	call	push2Stack
 .end:	ret
 ;end testLeftBrace
-
-printStack:
-	push	rsi
-	push	rax
-	push	rdi
-	push	rdx
-	mov	rsi, Stack
-	call	print
-	pop	rdx
-	pop	rdi
-	pop	rax
-	pop	rsi
-	ret
-;end printStack
 
 testOperator:
 	call	isOperator
@@ -143,13 +127,6 @@ getPrecedence:
 	ret
 ;end getPrecedence
 
-getTop:
-	xchg	r8, rbx
-	mov	ah, [rbx-1]
-	xchg	r8, rbx
-	ret
-;end getTop
-
 testRightBrace:
 	cmp	al, ')'
 	jne	.end
@@ -177,26 +154,6 @@ popFinal:
 	jmp	.loop
 .end:	ret
 ;end popFinal
-
-stackEmpty:
-	cmp	r8, Stack
-	ret
-;end stackEmpty
-
-push2Stack:
-	mov	[r8], al
-	inc	r8
-	ret
-;end push2Stack
-
-pop2String:
-	push	rax
-	dec	r8
-	mov	al, [r8]
-	stosb
-	pop	rax
-	ret
-;end pop2String
 
 addSpace:
 	mov	al, ' '
