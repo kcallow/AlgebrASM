@@ -11,7 +11,7 @@ _start:
 	call	copyTemp2Input
 
         mov     rsi,Input
-	call	printBuffer
+	call	print
 
 	mov	rdi,Input
 	mov	rcx,21*BUFSIZE	;Do for all 21 buffers
