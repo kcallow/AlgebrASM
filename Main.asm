@@ -18,7 +18,7 @@ _start:
 	call	copyTemp2Input
 
 	mov	rsi, Input
-	call	print
+	call	printBuffer
 
 	mov	rax,60
 	mov	rdi,0
