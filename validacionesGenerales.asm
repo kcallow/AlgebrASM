@@ -12,39 +12,37 @@ section .data
         msgOk:          db "Validación aprobada.",0x0A
         lenMsgOk:       equ $ - msgOk
 
-	msgErrVar:		db 0x0A,"Error. Variable no inicializada o simbología incorrecta.",0x0A
+	msgErrVar:	db 0x0A,"Error. Variable no inicializada o simbología incorrecta.",0x0A
         lenMsgErrVar:	equ $ - msgErrVar
 
-	operandos:	db "*-+/)(0" ;	%  agregar!!!!!!!!!!!! 0 marca el fin
+	operandos:	db "*/+)-(0" ; 0 marca el fin. NO CAMBIAR ORDEN
 	lenOperandos:	equ $ -operandos
 section .text
 	global _start
 	_start
 
-main:
+main:	
 	call read
+	xor r9, r9	;curret
+	xor r11, r11
+	xor rcx, rcx
+	call first
 	call checkVar
-	;call getVariables
-	;call comprobarVariables
 	call main
 	call exit
 
 checkVar:	;r8 max len
-	xor r9, r9		;r9 current of expression
-	xor r11, r11		;r11 firstComa (end of expression)
-	xor rcx, rcx
 	mov rcx, r8
 	.bucle:	
 		;cmp rcx, 0
 		;je exit
 		mov ax,[textIn + r9]	;mov al, ...
                 cmp al, '0'
-		jb .operandos	; por debajo del '0'
+		jb .operandosExp	; por debajo del '0'
                 cmp al, '9'
 		ja .errorVar
-		jmp .pass
-                ;ja .error
-	.operandos:
+		jmp .pass	        ;ja .error
+	.operandosExp:
 		xor rdx, rdx	;	!!!!!
 		dec rdx
 	.nextOp:
@@ -56,18 +54,16 @@ checkVar:	;r8 max len
 		cmp rdx, lenOperandos
 		je .error	
 		mov bl, [operandos + rdx]	;mov bl, 
-		cmp al, bl	
-		;je .pass
+		cmp al, bl		;je .pass
 		je .nextInExp;.pass
 		jne .nextOp
 	;end .nextOP
 	.nextInExp:	;"*-+/)(0"
 		xor rdx, rdx
-		cmp al, ')'
-		jne .auxNext
+		cmp al, ')';	jne .auxNext
 		je .pass
 	.auxNext:
-		cmp rdx, 5
+		cmp rdx, 3
 		je .pass
 		cmp ah, [operandos +rdx]
 		je .error
@@ -85,6 +81,18 @@ checkVar:	;r8 max len
 		jne .bucle	;pop rcx
 		ret
 ;end checkVar
+first:	
+	mov al, [textIn]
+.loop
+	cmp rcx, 4
+	je .continueF
+	cmp al, [operandos +rcx]	
+	je printErrValidacion
+	inc rcx
+	jmp .loop
+	.continueF
+	xor rcx, rcx
+	ret
 lastChar:
 	cmp al, ')'
 	jne  printErrValidacion
@@ -96,18 +104,14 @@ read:
             mov rdi, 1              ;std_in
             mov rsi, textIn
             mov rdx, lenTextIn
-            syscall
-		;len lectura
-                ;    cmp rax, 0
-                ;    je exit
+            syscall	    
             dec rax                 ;!!!! -ultimo  char
             mov r8, rax             ;guardar len
             ret
-;end read
 exit:
    mov rax, 60			; sys_exit (code 60)
    mov rdi, 0			; exit code (code 0 = normal)
-   syscall
+   syscall 
 ; end exit
 printErrValidacion:
 	mov rsi, msgErr
