@@ -27,9 +27,6 @@ postfix:
 	jne	.loop
 
 	call	popFinal
-
-	call	newline
-	call	newline
 	ret
 ;end postfix
 
@@ -64,9 +61,7 @@ testOperator:
 .skip:
 	call	push2Stack
 	call	addSpace
-	call	newline
-	call	printStack
-	call	newline
+	;call	printStack
 	cmp	rax,rax		;Set zf
 .end:	ret
 ;end testOperator
@@ -96,28 +91,6 @@ cmpPrecedence:
 	call	getPrecedence
 	xchg	ah,al
 	xchg	bh,bl
-	push	rcx
-	push	rsi
-	push	rax
-	push	rdi
-	push	rdx
-	mov	byte [CharIn], bh
-	mov	rsi, CharIn
-        mov     rax,1           ;call to system's 'write'
-        mov     rdi,1           ;write to the standard output
-        mov     rdx,1		;equals is single char
-        syscall
-	mov	byte [CharIn], bl
-	mov	rsi, CharIn
-        mov     rax,1           ;call to system's 'write'
-        mov     rdi,1           ;write to the standard output
-        mov     rdx,1		;equals is single char
-        syscall
-	pop	rdx
-	pop	rdi
-	pop	rax
-	pop	rsi
-	pop	rcx
 	cmp	bh, bl
 	ret
 
