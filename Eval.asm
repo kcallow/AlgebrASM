@@ -18,7 +18,7 @@ section .bss
 
 section .data
 
-		Postfix db '71 1000 1000/+',10
+		Postfix db '10 11 12 13+++',10
 		lenPos equ $ -Postfix
 
 		Input db '71+28',10
@@ -40,12 +40,15 @@ inicio:
 	mov 	cl,'0' ; se va a meter un '0' porque se va a comparat cl y al
 	mov 	r15,-1 ;coontador para crear expresion concatenada
 	mov 	r8,0	;contador de cuantos caracteres hay en pila 
-	mov 	r13,0	;contador para ver cuantos numeros hay
+	mov 	r13,0	;contador para ver cuantos numeros hay EN PILA
 
 eval: 
 	mov 	al, byte[Postfix+r10]; moviendo lo que hay en
 	cmp 	al,'0'				;30h, viendo si es un operando u operador
 	jb 		operador 			; si es menor es un operador, de lo contratario
+;comparoCl:
+	;cmp cl,'0'					;comparo el anterior con un signo,si es signo se va a hacer
+	;je pushnum							;push del numero 
 
 concat:
 	mov 	byte[num+r11],al	;si no es operador, es operando
@@ -59,16 +62,6 @@ concat:
 operador:
 	cmp 	al,' '  ;si es un espacio se va a hacer un push al 'stack'
 	je 		pushnum
-
-
-		;mov rax,1					; Sys_write
-		;mov rdi,1 
-		;move byte[prueba+0],','	
-		;mov rsi, 
-		;mov rdx, 1024				; el largo del resultado del ITOA
-		;syscall
-		;jmp fin
-
 
 ;sino se va a operar expresion, ya que es un signo 
 operar:
@@ -228,6 +221,7 @@ divide:
 
 
 trans:
+
 	pop r13
 	pop r11
 	pop r10 ;recupero el contaador para recorrer toda la expresion  
@@ -244,11 +238,30 @@ trans:
 
 ;voy a pasar el resultado a numero para meterlo al stack o seguir operando 
 
+;;;;en teoria ya deberia de haber hecho cambio en principal 
+
+
 limpionumre: 
 	mov 	byte[num+r12],0h ;
 	inc 	r12
 	cmp 	r12,1024;
 	jne 	limpionumre
+
+mov r12,0
+limpionumop1: 
+	mov 	byte[op1+r12],0h ;
+	inc 	r12
+	cmp 	r12,1024;
+	jne 	limpionumop1
+
+mov r12,0
+limpioCambio:
+	mov 	byte[cambio+r12],0h ;
+	inc 	r12
+	cmp 	r12,1024;
+	jne 	limpioCambio
+
+
 ;=============================================itoa==========================================
 
 Int2Char:
@@ -279,25 +292,28 @@ Int2Char:
 		jne .l
 
 	.print:
-		push rax
-		push rdi
-		push rsi
-		push rdx 
-		mov rax,1					; Sys_write
-		mov rdi,1 	
-		mov cl,bl					;estoy moviendo signo anterior
-		inc r10
-		;mov bl,byte[Postfix+r13]			; stdout
-		;mov byte[prueba+0],bl
-		;mov rsi, prueba			; resultado del ITOA
-		mov rsi,num
-		mov rdx, 1024				; el largo del resultado del ITOA
-		syscall
-		jmp fin
-		pop rdx
-		pop rsi
-		pop rdi 
-		pop rax
+
+ 	
+	mov cl,bl					;estoy moviendo signo anterior
+	inc r10
+	push 	rax
+	push 	rdi 
+	push 	rsi
+	push 	rdx
+
+	mov 	rax, 1													
+	mov 	rdi, 1 													
+	;mov rsi, num
+	mov 	rsi,num 
+	mov 	rdx, 1024												
+	syscall
+	;jmp fin 
+	pop 	rdx 
+	pop 	rsi 
+	pop 	rdi 
+	pop 	rax 
+		cmp byte[Postfix + r10],0
+		je fin 
 		jmp eval
 ;+++++++++++++++++++++++++++++++++++++++finitoa++++++++++++++++++++++++++++++++++++++
 
@@ -374,9 +390,10 @@ sumoenpop:
 creoOp1:
 	mov r9,r8 ;copio posicion para usarla luego para borrar
 	mov r15,0
+	inc r8 ;incremento r8 para que se salte el espacip
 
 cicloOp1:
-	mov al,byte[stack+r8+1] ;sino, se va a pasar el actual
+	mov al,byte[stack+r8] ;sino, se va a pasar el actual;;;;;;;;;;;;;;;;;
 	cmp al,'0' ; se compara para ver si es vacio
 	jb limpioStack;si es igual se va a limpiar lo ultimo 
 
@@ -398,6 +415,7 @@ preOpero:
 	pop r8
 	pop r9
 	dec r13 ;para senalar que se quito un numero 
+
 	jmp conseguiNum1 ;despues de conseguir numero vuelvo a donde quede con un jmp con el numero
 	;el numero quedo guardado en op1 
 
