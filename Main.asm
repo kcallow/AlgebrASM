@@ -1,4 +1,4 @@
-%import "Postfix.asm"
+%include "Postfix.asm"
 section .data
 global _start
 _start:
@@ -16,6 +16,9 @@ _start:
 
 	call	postfix
 	call	copyTemp2Input
+
+	mov	rsi, Input
+	call	print
 
 	mov	rax,60
 	mov	rdi,0
