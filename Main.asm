@@ -15,11 +15,15 @@ _start:
 
 	call	getAndReplaceAllVars
 
-	call	negativeSubs
-	call	positiveSubs
+	call	plusMinusSub
+	call	minusMinusSub
+	call	timesMinusSub
+	call	divMinusSub
 
 	call	postfix
 	call	copyTemp2Input
+
+	call	under2MinusSub
 
 	mov	rsi, Input
 	call	printBuffer
@@ -29,7 +33,7 @@ _start:
 	syscall
 ;end _start
 
-negativeSubs:
+plusMinusSub:
 ;Substitute '+-' for '-'
 	mov	rdi, Input
 	mov	rsi, .keywrd
@@ -43,9 +47,9 @@ negativeSubs:
 	ret
 .keywrd db	'+-'
 .subs	db	'-'
-;end negativeSubs
+;end plusMinusSub
 
-positiveSubs:
+minusMinusSub:
 ;Substitute '--' for '+'
 	mov	rdi, Input
 	mov	rsi, .keywrd
@@ -59,5 +63,53 @@ positiveSubs:
 	ret
 .keywrd db	'--'
 .subs	db	'+'
-;end positiveSubs
+;end minusMinusSub
 
+timesMinusSub:
+;Substitute '*-' for '*_'
+	mov	rdi, Input
+	mov	rsi, .keywrd
+	mov	r8, .subs
+	mov	r10, Temp
+	mov	rcx,BUFSIZE	;BUFSIZE chars max length
+	mov	rdx,2		;2	 chars max length
+	mov	r9,2		;2	 chars max length
+	mov	r11,BUFSIZE	;BUFSIZE chars max length
+	call	strReplaceAll
+	ret
+.keywrd db	'*-'
+.subs	db	'*_'
+;end timesMinusSub
+
+
+divMinusSub:
+;Substitute '/-' for '/_'
+	mov	rdi, Input
+	mov	rsi, .keywrd
+	mov	r8, .subs
+	mov	r10, Temp
+	mov	rcx,BUFSIZE	;BUFSIZE chars max length
+	mov	rdx,2		;2	 chars max length
+	mov	r9,2		;2	 chars max length
+	mov	r11,BUFSIZE	;BUFSIZE chars max length
+	call	strReplaceAll
+	ret
+.keywrd db	'/-'
+.subs	db	'/_'
+;end divMinusSub
+
+under2MinusSub:
+;Substitute '_' for '-'
+	mov	rdi, Input
+	mov	rsi, .keywrd
+	mov	r8, .subs
+	mov	r10, Temp
+	mov	rcx,BUFSIZE	;BUFSIZE chars max length
+	mov	rdx,1		;1	 chars max length
+	mov	r9,1		;1	 chars max length
+	mov	r11,BUFSIZE	;BUFSIZE chars max length
+	call	strReplaceAll
+	ret
+.keywrd db	'_'
+.subs	db	'-'
+;end under2MinusSub

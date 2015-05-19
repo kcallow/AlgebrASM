@@ -2,9 +2,9 @@
 %include "Stack.asm"
 
 section	.data
-Operators	db	'*/+-'
+Operators	db	'_*/+-'
 OpLen		equ	$ - Operators
-OpPrecedence	db	'1122'
+OpPrecedence	db	'01122'
 Error		db	'Error: invalid parenthesis.',10
 ErrorLen	equ	$ - Error
 
@@ -53,6 +53,7 @@ testOperator:
 	jne	.end
 	call	stackEmpty
 	je	.skip
+
 
 .operatorLoop:
 	call	cmpPrecedence
