@@ -18,7 +18,9 @@ section .bss
 
 section .data
 
-		Postfix db '10 11 12 13+++',10
+		;Postfix db '2 2 2 2-+*',10
+		;Postfix db '1 10 3+*4+'
+		Postfix db '100 10 10 1**/'
 		lenPos equ $ -Postfix
 
 		Input db '71+28',10
@@ -26,7 +28,9 @@ section .data
 
 		errorDiv db 'No se puede hacer division entre 0',10
 		lenError equ $ - errorDiv
-	
+		
+		cambioLinea db '',10
+		lenCambioLinea equ $-cambioLinea
 
 section .text
 
@@ -42,13 +46,19 @@ inicio:
 	mov 	r8,0	;contador de cuantos caracteres hay en pila 
 	mov 	r13,0	;contador para ver cuantos numeros hay EN PILA
 
+
 eval: 
 	mov 	al, byte[Postfix+r10]; moviendo lo que hay en
 	cmp 	al,'0'				;30h, viendo si es un operando u operador
 	jb 		operador 			; si es menor es un operador, de lo contratario
-;comparoCl:
-	;cmp cl,'0'					;comparo el anterior con un signo,si es signo se va a hacer
-	;je pushnum							;push del numero 
+
+;=======================creacion de primer numero para concatenar===================
+comparoCl:
+	cmp cl,'0'					;comparo el anterior con un signo,si es signo se va a hacer
+	jae concat 				;push del numero 
+siesmenor:
+	jmp pushnum
+
 
 concat:
 	mov 	byte[num+r11],al	;si no es operador, es operando
@@ -58,7 +68,9 @@ concat:
 	cmp 	r10,lenPos 			; si es igual termine, pero igual nunca va a terminar aca porque siempre de ultimo esta un operador 
 	jne 	eval  				;si no es igual salte
 	jmp 	fin
+;++++++++++++++++++++++fin creacion de primer numero para concatenar++++++++++++++++
 
+;=====================operadores 
 operador:
 	cmp 	al,' '  ;si es un espacio se va a hacer un push al 'stack'
 	je 		pushnum
@@ -82,11 +94,13 @@ conseguiNum1: ;vuelvo con el top del stack , que se guarda en op1
 
 operoexpresion:
 
-	mov al,byte[prueba+0] ;pasando el signo 
+	mov 	al,byte[prueba+0] ;pasando el signo 
 	pop 	rax
 	pop 	rdx 
 	pop 	rsi 
 	pop 	rdi 
+
+
 ;=============================================atoi==========================================
 
 .atoi:
@@ -137,7 +151,9 @@ operoexpresion:
 	ja .ciclo11
 
 ;atoi2
+
 		mov r14,r10
+		;mov edi, 0
 		mov r13,-1
 
 		.dameLen2:
@@ -200,22 +216,30 @@ operoexpresion:
 
 suma:
 	add rax,r10;voy a guardar en rax el resultado de la operacion 
-;	mov rbx,0
 	jmp trans
 
 resta:
-	sub rax,r10;voy a guardar en rax el resultado de la operacion 
-;	mov rbx,0
-	jmp trans
 
+	
+	cmp r10,rax
+	ja hagoNegacion
+	sub rax,r10;voy a guardar en rax el resultado de la operacion 
+	jmp trans
+hagoNegacion:
+	sub rax,r10;voy a guardar en rax el resultado de la operacion 
+	neg rax 
+	jmp trans
 multi:
-	mul r10;voy a guardar en rax el resultado de la operacion 
-;	mov rbx,0
+	mul r10		;voy a guardar en rax el resultado de la operacion 
+
+	jmp trans 
 divide:
+
+	xor rdx,rdx
 	cmp r10,0
 	je errorDivZero
-	div r10;voy a guardar en rax el resultado de la operacion 
-;	mov rbx,0
+	idiv r10;voy a guardar en rax el resultado de la operacion 
+
 	
 
 
@@ -227,17 +251,7 @@ trans:
 
 	mov r12,0
 
-	;tengo que revisar, peor creo que esta bien 
 
-	;push rax ;estoy  guar
-	;push rcx ;
-	;push rdx 
-	;push rsi 
-
-
-;voy a pasar el resultado a numero para meterlo al stack o seguir operando 
-
-;;;;en teoria ya deberia de haber hecho cambio en principal 
 
 
 limpionumre: 
@@ -252,14 +266,6 @@ limpionumop1:
 	inc 	r12
 	cmp 	r12,1024;
 	jne 	limpionumop1
-
-mov r12,0
-limpioCambio:
-	mov 	byte[cambio+r12],0h ;
-	inc 	r12
-	cmp 	r12,1024;
-	jne 	limpioCambio
-
 
 ;=============================================itoa==========================================
 
@@ -291,8 +297,6 @@ Int2Char:
 		jne .l
 
 	.print:
-
- 	
 	mov cl,bl					;estoy moviendo signo anterior
 	inc r10
 	push 	rax
@@ -301,19 +305,47 @@ Int2Char:
 	push 	rdx
 
 	mov 	rax, 1													
-	mov 	rdi, 1 													
-	;mov rsi, num
-	mov 	rsi,num 
+	mov 	rdi, 1 											
+	mov 	rsi,cambio
 	mov 	rdx, 1024												
 	syscall
-	;jmp fin 
+
+	mov 	rax, 1													
+	mov 	rdi, 1 													
+	mov 	rsi,cambioLinea
+	mov 	rdx, lenCambioLinea										
+	syscall
+
+	mov byte[prueba+0],cl
+	mov 	rax, 1													
+	mov 	rdi, 1 											
+	mov 	rsi,num
+	mov 	rdx, 1024												
+	syscall
+
+	mov 	rax, 1													
+	mov 	rdi, 1 													
+	mov 	rsi,cambioLinea
+	mov 	rdx, lenCambioLinea										
+	syscall
 	pop 	rdx 
 	pop 	rsi 
 	pop 	rdi 
 	pop 	rax 
-		cmp byte[Postfix + r10],0
-		je fin 
-		jmp eval
+
+
+
+mov r12,0
+limpioCambio:
+	mov 	byte[cambio+r12],0h ;
+	inc 	r12
+	cmp 	r12,1024;
+	jne 	limpioCambio
+
+	mov cl,byte[Postfix+r10-1]
+	cmp byte[Postfix + r10],0
+	je fin 
+	jmp eval
 ;+++++++++++++++++++++++++++++++++++++++finitoa++++++++++++++++++++++++++++++++++++++
 
 
@@ -423,9 +455,9 @@ preOpero:
 
 ;=============================================comienzo PUSH STACK==========================================
 pushnum: ;funcion para meter a pila numero actual 
-	inc 	r10				;incremento r10 que es el contador de 	
 	mov 	r12,0
-
+;	cmp cl,'0'
+;	jb fin 
 pushstack:
 	inc r13 				;contador para saber cuantos numeros estan en pila
 	mov byte[stack+r8],' '	; se va a meter un espacio antes de cada numero para saber donde termina 
@@ -447,7 +479,6 @@ finciclo:
 	mov 	r11,0	
 	pop 	rax				;para recuperar 
 	pop 	r9
-
 
 ;+++++++++++++++++++++++++++++++++++++++fin push stack++++++++++++++++++++++++++++++++++++++
 
@@ -480,7 +511,21 @@ limpionum: ;funcion para limpiar buffer
 	inc 	r12
 	cmp 	r12,1024;
 	jne 	limpionum
-	jmp 	eval 
+	jmp 	preeval 
+
+preeval:
+	cmp cl,'0'; si es menor va a ser un signo 
+	jb creoNuevoCL;si es menor voy a crear nuevo cl ,ya que si anterior es numero concatena
+
+
+pEval: ;si no es signo, va a ser un numero, por lo que se sigue analizando 
+	inc 	r10				;incremento r10 que es el contador siga su rumbo	
+	jmp 	eval 			;salto
+
+creoNuevoCL 
+	mov cl,'1'; se va a saltar de nuevo a eval pero con cl numero, para que se cree nuevo
+	jmp eval 	;numero 
+
 errorDivZero:
 	mov 	rax, 1													
 	mov 	rdi, 1 													
