@@ -1,4 +1,4 @@
-%include "String.asm"
+%include "Postfix.asm"
 section .bss
 
 	num resb 1024
@@ -18,15 +18,6 @@ section .bss
 	muestro resb 1024
 
 section .data
-
-		;Postfix db '2 2 2 2-+*',10
-		;Postfix db '1 10 3+*4+'
-		Postfix db '2 1 100++'
-		lenPos equ $ -Postfix
-
-		Input db '2+1+100',10
-		lenInput equ $ -Input
-
 		errorDiv db 'No se puede hacer division entre 0',10
 		lenError equ $ - errorDiv
 		
@@ -34,11 +25,6 @@ section .data
 		lenCambioLinea equ $-cambioLinea
 
 section .text
-
-	global _start
-
-_start:
-
 inicio:
 	mov 	r11,0 ;contador para meter a num
 	mov 	r10,0 ;contador para recorrer expresion
@@ -49,7 +35,7 @@ inicio:
 
 
 eval: 
-	mov 	al, byte[Postfix+r10]; moviendo lo que hay en
+	mov 	al, byte[Temp+r10]; moviendo lo que hay en
 	cmp 	al,'0'				;30h, viendo si es un operando u operador
 	jb 		operador 			; si es menor es un operador, de lo contratario
 
@@ -66,7 +52,7 @@ concat:
 	inc 	r11					; se incrementa el contador del numero en construccion
 	inc 	r10					; se incrementa contador de la cadena principal 
 	mov 	cl, al				; se va a copiar valor en cl para hacer comparaciones
-	cmp 	r10,lenPos 			; si es igual termine, pero igual nunca va a terminar aca porque siempre de ultimo esta un operador 
+	cmp 	r10,BUFSIZE 			; si es igual termine, pero igual nunca va a terminar aca porque siempre de ultimo esta un operador 
 	jne 	eval  				;si no es igual salte
 	jmp 	fin
 ;++++++++++++++++++++++fin creacion de primer numero para concatenar++++++++++++++++
@@ -403,8 +389,8 @@ limpioCambio:
 	cmp 	r12,1024;
 	jne 	limpioCambio
 
-	mov cl,byte[Postfix+r10-1]
-	cmp byte[Postfix + r10],0
+	mov cl,byte[Temp+r10-1]
+	cmp byte[Temp + r10],0
 	je fin 
 	jmp eval
 ;+++++++++++++++++++++++++++++++++++++++finitoa++++++++++++++++++++++++++++++++++++++
@@ -563,7 +549,7 @@ printeo:
 	pop 	rdi 
 	pop 	rax 
 
-	cmp 	r10 , lenPos
+	cmp 	r10 , BUFSIZE
 	je 		fin
 	;jmp limpionum
 

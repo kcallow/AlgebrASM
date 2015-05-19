@@ -1,4 +1,4 @@
-%include "Postfix.asm"
+%include "Eval.asm"
 section .data
 global _start
 _start:
@@ -24,6 +24,8 @@ _start:
 	call	copyTemp2Input
 
 	call	under2MinusSub
+
+	call	inicio
 
 	mov	rsi, Input
 	call	printBuffer
