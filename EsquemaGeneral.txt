@@ -24,15 +24,15 @@ GetExpression.asm, Implicit2ExplicitMul.asm, GetVariables.asm, Postfix.asm, Eval
 
 De ahi se pueden plantear diferentes modulos del programa a implementar:
 0.	GetExpression.asm, modulo para obtener expresion algebraica.  Implementa:
-		- Declarar string Input en blanco de 1024 caracteres para guardar expresion algebraica en infijo.
-		- Declarar string Temp en blanco de 1024 caracteres para guardar expresiones temporales.
+		- Declarar array Input de 21 strings de 1024 caracteres en blanco para guardar expresion algebraica en infijo y asignaciones de variables.
+		- Declarar array Temp de 21 strings de 1024 caracteres en blanco para guardar expresiones temporales.
 		- Limpiar datos de string dado por rdi.
-		- Obtener string de entrada estandar y poner en string en blanco.
-		- Leer el string Input y remover espacio en blanco (espacios, tabs, newlines, etc.), guardar resultado en Temp
+		- Obtener string de entrada estandar y poner en Input.
+		- Leer los strings Input y remover espacio en blanco (espacios, tabs, newlines, etc.), guardar resultado en Temp
 1.	Implicit2ExplicitMul.asm, modulo para convertir a multiplicacion explicita. Implementa:
 		- Leer Input y agregar asterisco en todos los lugares donde hay multiplicacion implicita.  Poner resultado en Temp.
 2.	GetVariables.asm, modulo para convertir variables en expresion a constantes.  Implementa:
-		- Declara una lista de 20 nombres de variables de 128 caracteres maximo cada uno.
+		- Declara una string de 1024 caracteres para guardar cada nombre de variable.
 		- Declara un string de 26 caracteres para almacenar temporalmente el valor de cada variable.
 		- Leer el string y agregar cada uno de los nombres de variables a la lista de nombres, sin repetirse.
 		- Para cada uno de los nombres leidos:
@@ -44,7 +44,6 @@ De ahi se pueden plantear diferentes modulos del programa a implementar:
 3.	Postfix.asm, modulo para convertir de y a notacion posfija.  Implementa:
 		- Declarar string Postfix en blanco de 1024 caracteres para guardar expresion en notacion posfija.
 		- Convertir Input a notacion posfija utilizando el Shunting Yard algorithm de Dijkstra, guardar resultado en Postfix.  Si hay parentesis que no corresponden, tirar mensaje de error y terminar ejecucion. 
-		- Convertir Postfix a infijo utilizando algoritmo en http://www.codeproject.com/Articles/405361/Converting-Postfix-Expressions-to-Infix , guardar resultado en Input.
 4.	Eval.asm, modulo para evaluar notacion posfija.  Implementa:
 		- Declara strings de 26 caracteres A, B y Result para almacenar operandos y resultados temporales.
 		- Leer Postfix y evaluar la primera operacion posible.  Para esto debe:

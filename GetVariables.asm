@@ -31,28 +31,6 @@ getAndReplaceAllVars:
 
 ;end getAndReplaceAllVars
 
-printVar:
-	push	rcx
-	push	rsi
-	push	rax
-	push	rdi
-	push	rdx
-	mov	rsi,VarName
-	call	printBuffer
-	call	equals
-        mov     rax,1           ;call to system's 'write'
-	mov	rsi,VarValu
-        mov     rdi,1           ;write to the standard output
-        mov     rdx,ValuLen
-        syscall
-	pop	rdx
-	pop	rdi
-	pop	rax
-	pop	rsi
-	pop	rcx
-	ret
-;end printVar
-
 getVar:
 ;Puts the first variable found in rsi to VarName
 ;Puts its value in VarValu

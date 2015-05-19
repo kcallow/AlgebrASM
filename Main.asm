@@ -12,6 +12,9 @@ _start:
 	call	addAsterisks
 	call	copyTemp2Input
 
+	call	negativeSubs
+	call	positiveSubs
+
 	call	getAndReplaceAllVars
 
 	call	postfix
@@ -24,3 +27,36 @@ _start:
 	mov	rdi,0
 	syscall
 ;end _start
+
+negativeSubs:
+;Substitute '+-' for '-'
+	mov	rdi, Input
+	mov	rsi, .keywrd
+	mov	r8, .subs
+	mov	r10, Temp
+	mov	rcx,BUFSIZE	;BUFSIZE chars max length
+	mov	rdx,2		;2	 chars max length
+	mov	r9,1		;1	 chars max length
+	mov	r11,BUFSIZE	;BUFSIZE chars max length
+	call	strReplaceAll
+	ret
+.keywrd db	'+-'
+.subs	db	'-'
+;end negativeSubs
+
+positiveSubs:
+;Substitute '--' for '+'
+	mov	rdi, Input
+	mov	rsi, .keywrd
+	mov	r8, .subs
+	mov	r10, Temp
+	mov	rcx,BUFSIZE	;BUFSIZE chars max length
+	mov	rdx,2		;2	 chars max length
+	mov	r9,1		;1	 chars max length
+	mov	r11,BUFSIZE	;BUFSIZE chars max length
+	call	strReplaceAll
+	ret
+.keywrd db	'--'
+.subs	db	'+'
+;end positiveSubs
+
