@@ -18,10 +18,6 @@ _start:
 	call	negativeSubs
 	call	positiveSubs
 
-	mov	rdi,Temp
-	mov	rcx,21*BUFSIZE
-	call	clearString
-
 	call	postfix
 	call	copyTemp2Input
 

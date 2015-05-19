@@ -12,6 +12,9 @@ section	.text
 postfix:
 	mov	rsi, Input
 	mov	rdi, Temp
+	mov	rcx,21*BUFSIZE
+	call	clearString
+	mov	rdi, Temp
 	mov	r8, Stack	;Use r8 as stack pointer
 .loop:
 	lodsb		;Put current char in al, inc rsi
