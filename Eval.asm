@@ -138,7 +138,6 @@ operoexpresion:
 
 ;atoi2
 		mov r14,r10
-		;mov edi, 0
 		mov r13,-1
 
 		.dameLen2:
