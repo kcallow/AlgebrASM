@@ -10,7 +10,7 @@ _start:
 
 	call	copyTemp2Input
 
-        mov     rsi,Temp
+        mov     rsi,Input
 	call	print
 
 	mov	rax,60

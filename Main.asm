@@ -6,16 +6,21 @@ _start:
 	mov	bl, ','		;Comma is delimitor for input
 	mov	rcx,21*BUFSIZE	;Read 21 buffers
 	call	getString
+
 	call	removeWhitespace
 	call	copyTemp2Input
 
 	call	addAsterisks
 	call	copyTemp2Input
 
+	call	getAndReplaceAllVars
+
 	call	negativeSubs
 	call	positiveSubs
 
-	call	getAndReplaceAllVars
+	mov	rdi,Temp
+	mov	rcx,21*BUFSIZE
+	call	clearString
 
 	call	postfix
 	call	copyTemp2Input
