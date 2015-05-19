@@ -1,3 +1,4 @@
+%include "String.asm"
 section .bss
 
 	num resb 1024
@@ -14,16 +15,16 @@ section .bss
 
 	cambio resb 1024
 
-
+	muestro resb 1024
 
 section .data
 
 		;Postfix db '2 2 2 2-+*',10
 		;Postfix db '1 10 3+*4+'
-		Postfix db '100 10 10 1**/'
+		Postfix db '2 1 100++'
 		lenPos equ $ -Postfix
 
-		Input db '71+28',10
+		Input db '2+1+100',10
 		lenInput equ $ -Input
 
 		errorDiv db 'No se puede hacer division entre 0',10
@@ -219,16 +220,16 @@ suma:
 	jmp trans
 
 resta:
-
-	
 	cmp r10,rax
 	ja hagoNegacion
 	sub rax,r10;voy a guardar en rax el resultado de la operacion 
 	jmp trans
+
 hagoNegacion:
 	sub rax,r10;voy a guardar en rax el resultado de la operacion 
 	neg rax 
 	jmp trans
+
 multi:
 	mul r10		;voy a guardar en rax el resultado de la operacion 
 
@@ -336,8 +337,68 @@ Int2Char:
 
 
 mov r12,0
+	
+	;voy a intentar implementar
+	;el cambio
+	push rax
+	push rbx
+	push rcx
+	push rdx
+	push rdi
+	push rsi
+	push r8
+	push r9
+	push r10 
+	push r11
+	push r12
+	push r13
+	push r14
+	push r15
+
+	mov rdi,Input;original
+	mov rsi,cambio
+	mov r8,num ;substring 
+	mov r10,muestro ;donde va a quedar resul
+
+	mov rcx ,1024
+	mov rdx,1024
+	mov r9,1024
+	mov r11,1024
+	call strReplaceAll
+	mov rsi,muestro
+
+	;call printBuffer												
+	mov 	rax,1
+	mov 	rdi, 1 													
+	mov 	rsi,muestro 
+	mov 	rdx, 1024												
+	syscall
+
+	;mov 	rax,1
+	;mov 	rdi, 1 													
+	;mov 	rsi,cambioLinea
+	;mov 	rdx, lenCambioLinea												
+	;syscall
+	pop r15
+	pop r14
+	pop r13
+	pop r12
+	pop r11
+	pop r10
+	pop r9
+	pop r8
+	pop rsi 
+	pop rdi 
+	pop rdx
+	pop rcx
+	pop rbx
+	pop rax
+
+
+
 limpioCambio:
 	mov 	byte[cambio+r12],0h ;
+	mov 	byte[muestro+r12],0h
 	inc 	r12
 	cmp 	r12,1024;
 	jne 	limpioCambio
